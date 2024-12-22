@@ -4,10 +4,11 @@
  *
  * Contains helper functions for parsing and displaying packet information.
  */
+#include <netinet/ip.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "headers.h"
-#include <netinet/ip.h> // For IP header parsing
-#include <netinet/in.h> // For sockaddr_in structure
 
 /**
  * @brief Prints information about a captured packet.
@@ -18,23 +19,43 @@
  * @param buffer The buffer containing the captured packet data.
  * @param size The size of the captured packet.
  */
-void print_packet_info(const unsigned char *buffer, int size) {
-    // Cast the buffer directly to IP header
-    struct ip *iph = (struct ip *)(buffer);
+
+static int total_packets = 0;
+static int total_bytes = 0;
+
+void print_statistics() {
+    printf("\n=== Statistics ===\n");
+    printf("Total Packets: %d\n", total_packets);
+    printf("Total Bytes: %d\n", total_bytes);
+    printf("==================\n");
+}
+
+void print_packet_info(const unsigned char *buffer, int size, const char *output_file) {
+    struct ip *iph = (struct ip *)buffer;
     struct sockaddr_in source, dest;
 
-    memset(&source, 0, sizeof(source));
-    memset(&dest, 0, sizeof(dest));
-
-    // Populate source and destination addresses
     source.sin_addr = iph->ip_src;
     dest.sin_addr = iph->ip_dst;
 
-    printf("\n========== Packet Details ==========\n");
-    printf("Source IP: %s\n", inet_ntoa(source.sin_addr));
-    printf("Destination IP: %s\n", inet_ntoa(dest.sin_addr));
-    printf("Protocol: %d\n", iph->ip_p);
-    printf("Packet Size: %d bytes\n", size);
-    printf("=====================================\n");
+    char details[256];
+    snprintf(details, sizeof(details),
+             "========== Packet Details ==========\n"
+             "Source IP: %s\n"
+             "Destination IP: %s\n"
+             "Protocol: %d\n"
+             "Packet Size: %d bytes\n"
+             "=====================================\n",
+             inet_ntoa(source.sin_addr),
+             inet_ntoa(dest.sin_addr),
+             iph->ip_p,
+             size);
+
+    printf("%s\n", details);
+
+    FILE *output_file_ptr = fopen(output_file, "a");
+    if (output_file_ptr) {
+        fprintf(output_file_ptr, "%s\n", details);
+        fclose(output_file_ptr);
+    }
 }
 

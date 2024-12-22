@@ -1,73 +1,142 @@
-# PacketProwler
-
-## Overview
-PacketProwler is a custom packet sniffer designed to capture and analyze network traffic in real time. Built using raw sockets in C, it enables users to filter packets by protocol or port, log traffic, and gain insights into their network environment.
+### **PacketProwler - A Lightweight Network Packet Sniffer**  
 
 ---
 
-## Features
-- **Real-Time Packet Capture**: Monitor live network traffic at the packet level.
-- **Protocol Filtering**: Focus on specific protocols such as TCP, UDP, or ICMP.
-- **Customizable Port Filters**: Capture packets for specific ports (e.g., HTTP traffic on port 80).
-- **Packet Logging**: Save captured packets to a file for offline analysis.
-- **CLI Configuration**: Flexible options for configuring capture parameters.
+### **Overview**  
+
+**PacketProwler** is a lightweight, customizable network packet sniffer written in **C** using the **libpcap** library. It captures real-time network packets and provides details such as source and destination IP addresses, protocol types, and packet sizes.  
 
 ---
 
-## Installation
-
-### Prerequisites
-- GCC Compiler
-- Linux Operating System
-- Root Privileges (required for raw socket operations)
-
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/chirag0728/Packet-Prowler
-   cd PacketProwler
-   ```
-2. Compile the source code:
-   ```bash
-   make
-   ```
-3. Run PacketProwler:
-   ```bash
-   sudo ./PacketProwler -p 80 -o traffic.log
-   ```
+### **Features**  
+- **Real-Time Packet Sniffing** – Capture live network traffic on specified interfaces.  
+- **Protocol Filtering** – Apply filters to capture specific traffic types like TCP or UDP.  
+- **Packet Analysis** – Extract and display key details such as source IP, destination IP, protocol, and size.  
+- **Output Logging** – Log packet details into an output file for later review.  
+- **Extensible Design** – Easily add support for new protocols and additional analysis features.  
 
 ---
 
-## Usage
+### **Folder Structure**  
 
-### Command-Line Options
-- `-p <port>`: Specify the port to filter packets.
-- `-o <file>`: Output file for saving captured packets.
-
-### Examples
-- Capture all packets on port 80:
-  ```bash
-  sudo ./PacketProwler -p 80
-  ```
-- Save captured packets to a file:
-  ```bash
-  sudo ./PacketProwler -p 443 -o packets.pcap
-  ```
+```plaintext
+PacketProwler/
+├── Makefile           # Build configuration
+├── README.md          # Project documentation
+├── src/
+│   ├── main.c         # Program entry point
+│   ├── packet_sniffer.c # Core packet sniffing logic
+│   ├── utils.c        # Helper functions for packet processing
+│   ├── headers.h      # Shared headers and function declarations
+└── output.txt         # Output file for logs (created dynamically)
+```
 
 ---
 
-## Documentation
-Detailed documentation can be found in the [docs](./docs/) directory:
-- [Design](./docs/design.md): Architectural overview.
-- [Usage Guide](./docs/usage.md): Step-by-step usage instructions.
-- [Future Roadmap](./docs/roadmap.md): Planned enhancements and features.
+### **Getting Started**  
+
+#### **Dependencies**  
+
+- A Unix-like operating system (Linux or macOS).  
+- GCC compiler.  
+- **libpcap** library (Install it with `sudo apt install libpcap-dev` on Linux).  
+
+#### **Build the Project**  
+
+Clone the repository and navigate to the project directory:  
+
+```bash
+git clone https://github.com/chirag0728/PacketProwler.git
+cd PacketProwler
+make
+```
+
+#### **Run the Program**  
+
+Run the program with the required options:  
+
+```bash
+sudo ./PacketProwler -o output.txt -n 100
+```
+
+- **`-o <file>`** – Specify an output file for packet logs (default: `output.txt`).  
+- **`-n <count>`** – Limit the number of packets captured (default: unlimited).  
+
+#### **View Captured Packets**  
+
+Check the output file for logged packet details:  
+
+```bash
+cat output.txt
+```
 
 ---
 
-## Contributing
-Contributions are welcome! 
+### **Usage Example**  
 
-## Contact
-For questions or feedback, please reach out to:
-- **Your Name**: [chirag0728@gmail.com](mailto:chirag0728@gmail.com)
-- GitHub: [chirag0728](https://github.com/chirag0728)
+```bash
+# Capture 50 packets and save the logs to packets.log
+sudo ./PacketProwler -o packets.log -n 50
+```
+
+**Sample Output**  
+
+```
+========== Packet Details ==========
+Source IP: 192.168.1.5
+Destination IP: 192.168.1.10
+Protocol: TCP
+Packet Size: 1500 bytes
+======================================
+```
+
+---
+
+### **Customization**  
+
+#### **Filter Protocols**  
+
+Edit the `filter_exp` variable in `packet_sniffer.c` to modify the packet filter:  
+
+```c
+char filter_exp[256] = "udp";
+```
+
+#### **Add New Protocols**  
+
+Extend the `utils.c` file to support additional protocols like ICMP or custom headers.  
+
+#### **Optimize Performance**  
+
+Adjust buffer sizes and fine-tune `pcap_open_live` parameters to handle high-speed traffic more efficiently.  
+
+---
+
+### **Technical Details**  
+
+- **Core Technologies** – Written in **C** using the **libpcap** library.  
+- **Platform Compatibility** – Works on macOS and Linux.  
+- **Key Functions**:  
+  - **`pcap_open_live`** – Opens a network device for capturing packets.  
+  - **`pcap_compile`** and **`pcap_setfilter`** – Apply filters to capture specific traffic.  
+  - **`print_packet_info`** – Logs packet details to the console and a file.  
+
+---
+
+### **Future Enhancements**  
+
+- Add support for IPv6 packets.  
+- Implement multi-threaded packet processing.  
+- Create a real-time console dashboard for visualizing traffic.  
+- Expand logging formats to include JSON and CSV outputs.  
+
+---
+
+### **Contributing**  
+
+Contributions are welcome!  
+
+If you’ve spotted a bug, have a feature suggestion, or want to contribute code, feel free to open an issue or submit a pull request.  
+
+---
+
