@@ -1,50 +1,51 @@
 /**
  * @file packet_sniffer.c
- * @brief Core functionality for capturing and analyzing network packets.
+ * @brief Core functionality for capturing and analyzing network packets on macOS.
  *
- * Implements the main logic for packet sniffing using raw sockets. Processes
- * captured packets to extract and log relevant information.
+ * Uses Berkeley Packet Filter (BPF) via libpcap to capture packets.
  */
 
 #include "headers.h"
+#include <pcap.h> // Libpcap header for packet capture
+
+#define BUFFER_SIZE 65536
 
 /**
- * @brief Starts the packet sniffer.
+ * @brief Starts the packet sniffer on macOS.
  *
- * Creates a raw socket to capture all incoming packets on the network interface.
- * Processes each packet to extract and display its details.
+ * Opens the default network interface using libpcap and captures packets.
  *
  * @return int Returns 1 on success, 0 on failure.
  */
 int start_sniffer() {
-    int sock_raw;
-    unsigned char *buffer = (unsigned char *)malloc(65536);
-    struct sockaddr saddr;
-    int saddr_len = sizeof(saddr);
+    char errbuf[PCAP_ERRBUF_SIZE]; // Buffer to hold error messages
+    pcap_t *handle;
 
-    // Create raw socket
-    sock_raw = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-    if (sock_raw < 0) {
-        perror("Socket creation failed");
-        free(buffer);
+    // Find the default network interface
+    char *device = pcap_lookupdev(errbuf);
+    if (device == NULL) {
+        fprintf(stderr, "Error finding default device: %s\n", errbuf);
+        return 0;
+    }
+    printf("Using device: %s\n", device);
+
+    // Open the device for packet capture
+    handle = pcap_open_live(device, BUFFER_SIZE, 1, 1000, errbuf);
+    if (handle == NULL) {
+        fprintf(stderr, "Error opening device %s: %s\n", device, errbuf);
         return 0;
     }
 
-    printf("Listening for packets...\n");
-    while (1) {
-        int data_size = recvfrom(sock_raw, buffer, 65536, 0, &saddr, (socklen_t *)&saddr_len);
-        if (data_size < 0) {
-            perror("Failed to receive packets");
-            close(sock_raw);
-            free(buffer);
-            return 0;
-        }
+    printf("Listening for packets on %s...\n", device);
 
-        print_packet_info(buffer, data_size);
+    // Capture packets in a loop
+    struct pcap_pkthdr header;
+    const unsigned char *packet;
+    while ((packet = pcap_next(handle, &header)) != NULL) {
+        print_packet_info(packet, header.len);
     }
 
-    close(sock_raw);
-    free(buffer);
+    pcap_close(handle);
     return 1;
 }
 
