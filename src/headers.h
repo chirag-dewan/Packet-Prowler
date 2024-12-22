@@ -6,7 +6,9 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <pcap.h> // For libpcap
+#include <pcap.h>            // For packet capture
+#include <netinet/ip.h>      // For IP header structure
+#include <netinet/in.h>      // For sockaddr_in
 
 // Function declarations
 int start_sniffer();
