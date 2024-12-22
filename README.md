@@ -24,7 +24,7 @@ PacketProwler is a custom packet sniffer designed to capture and analyze network
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/chirag0728/PacketProwler.git](https://github.com/chirag0728/Packet-Prowler/)
+   git clone https://github.com/chirag0728/Packet-Prowler
    cd PacketProwler
    ```
 2. Compile the source code:
