@@ -65,9 +65,7 @@ Detailed documentation can be found in the [docs](./docs/) directory:
 ---
 
 ## Contributing
-Contributions are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
-
--
+Contributions are welcome! 
 
 ## Contact
 For questions or feedback, please reach out to:
