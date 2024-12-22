@@ -70,4 +70,4 @@ Contributions are welcome!
 ## Contact
 For questions or feedback, please reach out to:
 - **Your Name**: [chirag0728@gmail.com](mailto:chirag0728@gmail.com)
-- GitHub: [yourusername](https://github.com/chirag0728)
+- GitHub: [chirag0728](https://github.com/chirag0728)
