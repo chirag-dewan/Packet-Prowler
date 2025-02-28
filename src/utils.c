@@ -90,6 +90,19 @@ int print_packet_info(const unsigned char *buffer, int size, const char *output_
     }
     
     // Point to the IP header (after Ethernet header)
+    // First check if the packet is actually an IP packet
+    if (size <= ethernet_header_size + 20) { // IP header is at least 20 bytes
+        printf("Packet too small to be an IP packet\n");
+        return 0;
+    }
+    
+    // Check packet type from Ethernet header (EtherType field)
+    uint16_t ether_type = ntohs(*((uint16_t *)(buffer + 12)));
+    if (ether_type != 0x0800) { // 0x0800 is IP
+        printf("Packet is not an IP packet (EtherType: 0x%04x)\n", ether_type);
+        return 0;
+    }
+    
     struct ip *iph = (struct ip *)(buffer + ethernet_header_size);
     
     struct sockaddr_in source, dest;

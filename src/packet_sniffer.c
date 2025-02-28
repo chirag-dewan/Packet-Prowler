@@ -107,6 +107,15 @@
          pcap_freealldevs(alldevs);
          return 0;
      }
+     
+     // Check if the link layer is Ethernet
+     int datalink = pcap_datalink(handle);
+     if (datalink != DLT_EN10MB) {
+         fprintf(stderr, "Device %s doesn't provide Ethernet headers - not supported\n", device);
+         pcap_close(handle);
+         pcap_freealldevs(alldevs);
+         return 0;
+     }
  
      // Initialize signal handlers
      init_signal_handlers();
